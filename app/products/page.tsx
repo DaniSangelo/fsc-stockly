@@ -7,7 +7,7 @@ import { productTableColumns } from "./_components/table-columns";
 const ProductsPage = async () => {
   const products = await db.product.findMany({});
   return (
-    <div className="w-full space-y-8 p-8">
+    <div className="m-8 rounded-lg w-full space-y-8 bg-white p-8">
       <div className="flex w-full items-center justify-between">
         <div className="space-y-1">
           <span className="text-xs font-semibold text-slate-500">
