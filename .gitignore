@@ -36,3 +36,11 @@ yarn-error.log*
 next-env.d.ts
 
 commands.md
+
+.postgres-data
+/app/generated/prisma
+.windsurf
+.claude
+.agents
+.env
+skills-lock.json
