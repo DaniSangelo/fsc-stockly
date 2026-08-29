@@ -20,6 +20,7 @@ const DeleteDialogContent = ({ productId }: DeleteDialogContentProps) => {
       await deleteProduct({ id: productId });
       toast.success("Produto removido com sucesso")
     } catch (error) {
+      toast.error("Erro ao remover produto")
       console.log(error);
     }
   };

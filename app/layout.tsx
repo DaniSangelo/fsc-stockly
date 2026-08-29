@@ -26,7 +26,7 @@ export default function RootLayout({
           <Sidebar />
           {children}
         </div>
-        <Toaster />
+        <Toaster richColors visibleToasts={5} expand={true} position="top-center"/>
       </body>
     </html>
   );
