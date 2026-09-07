@@ -19,6 +19,13 @@ export const productTableColumns: ColumnDef<Product>[] = [
   {
     accessorKey: "price",
     header: "Vr. Unitário",
+    cell: (row) => {
+      const product = row.row.original;
+      return Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      }).format(+product.price)
+    }
   },
   {
     accessorKey: "stock",
