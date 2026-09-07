@@ -1,27 +1,11 @@
 "use client";
 
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-} from "@/app/_components/ui/alert-dialog";
+import { AlertDialog } from "@/app/_components/ui/alert-dialog";
 import { Badge } from "@/app/_components/ui/badge";
-import { Button } from "@/app/_components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/app/_components/ui/dropdown-menu";
 import { Product } from "@/app/generated/prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import {
-  CircleIcon,
-  ClipboardCopyIcon,
-  EditIcon,
-  MoreHorizontalIcon,
-  TrashIcon,
-} from "lucide-react";
-import DeleteDialogContent from "./delete-dialog-content";
+import { CircleIcon } from "lucide-react";
+import ProductDialog from "./product-dialog";
 
 const getStatusLabel = (status: string): string => {
   return status === "IN_STOCK" ? "Em estoque" : "Esgotado";
@@ -66,34 +50,7 @@ export const productTableColumns: ColumnDef<Product>[] = [
       const product = row.row.original;
       return (
         <AlertDialog>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost">
-                <MoreHorizontalIcon size={16} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {/* <DropdownMenuLabel>Ações</DropdownMenuLabel> */}
-              {/* <DropdownMenuSeparator /> */}
-              <DropdownMenuItem
-                className="gap-1.5"
-                onClick={() => {
-                  navigator.clipboard.writeText(product.id);
-                }}
-              >
-                <ClipboardCopyIcon size={16} /> Copiar id
-              </DropdownMenuItem>
-              <DropdownMenuItem className="gap-1.5">
-                <EditIcon size={16} /> Editar
-              </DropdownMenuItem>
-              <AlertDialogTrigger asChild>
-                <DropdownMenuItem className="gap-1.5">
-                  <TrashIcon size={16} /> Remover
-                </DropdownMenuItem>
-              </AlertDialogTrigger>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DeleteDialogContent productId={product.id} />
+          <ProductDialog product={product} />
         </AlertDialog>
       );
     },

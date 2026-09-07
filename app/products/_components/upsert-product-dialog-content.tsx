@@ -1,6 +1,9 @@
-'use client';
+"use client";
 
-import { createProductSchema, CreateProductSchema } from "@/app/_actions/product/create-product/schema";
+import {
+  upsertProductSchema,
+  UpsertProductSchema,
+} from "@/app/_actions/product/upsert-product/schema";
 import { Button } from "@/app/_components/ui/button";
 import {
   DialogContent,
@@ -20,19 +23,24 @@ import {
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import { Loader2Icon } from "lucide-react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createProduct } from "@/app/_actions/product/create-product/create-product";
+import { upsertProduct } from "@/app/_actions/product/upsert-product/upsert-product";
 
 interface UpsertProductDialogContentProps {
   onSuccess?: () => void;
+  defaultValues?: UpsertProductSchema;
 }
 
-const UpsertProductDialogContent = ({ onSuccess }: UpsertProductDialogContentProps) => {
-  const form = useForm<CreateProductSchema>({
-    resolver: zodResolver(createProductSchema),
-    defaultValues: {
+const UpsertProductDialogContent = ({
+  defaultValues,
+  onSuccess,
+}: UpsertProductDialogContentProps) => {
+  const form = useForm<UpsertProductSchema>({
+    resolver: zodResolver(upsertProductSchema),
+    defaultValues: defaultValues ?? {
       name: "",
       price: 0,
       stock: 0,
@@ -40,12 +48,24 @@ const UpsertProductDialogContent = ({ onSuccess }: UpsertProductDialogContentPro
     shouldUnregister: true, //clean all previously filled inputs
   });
 
-  const onSubmit = async (data: CreateProductSchema) => {
+  useEffect(() => {
+    form.reset(
+      defaultValues ?? {
+        name: "",
+        price: 0,
+        stock: 0,
+      },
+    );
+  }, [defaultValues, form]);
+
+  const isEditing = !!defaultValues;
+  const onSubmit = async (data: UpsertProductSchema) => {
     try {
-      await createProduct(data);
+      console.log({ ...data, id: defaultValues?.id ?? "" });
+      await upsertProduct({ ...data, id: defaultValues?.id });
       onSuccess?.();
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
   return (
@@ -53,7 +73,9 @@ const UpsertProductDialogContent = ({ onSuccess }: UpsertProductDialogContentPro
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <DialogHeader>
-            <DialogTitle> Criar produto </DialogTitle>
+            <DialogTitle>
+              {`${isEditing ? "Editar" : "Criar"}`} produto
+            </DialogTitle>
             <DialogDescription>Insira as informações abaixo</DialogDescription>
           </DialogHeader>
           <FormField
