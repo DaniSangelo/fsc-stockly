@@ -6,6 +6,7 @@ import { Product } from "@/app/generated/prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { CircleIcon } from "lucide-react";
 import ProductDialog from "./product-dialog";
+import { formatCurrency } from "@/app/_helpers/currency";
 
 const getStatusLabel = (status: string): string => {
   return status === "IN_STOCK" ? "Em estoque" : "Esgotado";
@@ -21,10 +22,7 @@ export const productTableColumns: ColumnDef<Product>[] = [
     header: "Vr. Unitário",
     cell: (row) => {
       const product = row.row.original;
-      return Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-      }).format(+product.price)
+      return formatCurrency(+product.price)
     }
   },
   {
