@@ -3,6 +3,7 @@
 import {
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@/app/_components/ui/sheet";
@@ -20,7 +21,7 @@ import {
 import { Input } from "@/app/_components/ui/input";
 import { Combobox, ComboboxOption } from "@/app/_components/ui/combobox";
 import { Button } from "@/app/_components/ui/button";
-import { PlusIcon } from "lucide-react";
+import { CheckIcon, PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Product } from "@/app/generated/prisma/client";
 import {
@@ -35,10 +36,16 @@ import {
 } from "@/app/_components/ui/table";
 import { formatCurrency } from "@/app/_helpers/currency";
 import SalesTableDropdownMenu from "./table-dropdown-menu";
+import { createSale } from "@/app/_actions/sale/create-sale";
+import { toast } from "sonner";
 
 const formSchema = z.object({
-  productId: z.string().uuid({message: "Produto deve ser informado"}),
-  quantity: z.coerce.number().int("Somente números inteiros").positive("Quantidade do produto deve ser maior que zero").min(0, { message: "Quantidade do produto deve ser informada" }),
+  productId: z.string().uuid({ message: "Produto deve ser informado" }),
+  quantity: z.coerce
+    .number()
+    .int("Somente números inteiros")
+    .positive("Quantidade do produto deve ser maior que zero")
+    .min(0, { message: "Quantidade do produto deve ser informada" }),
 });
 
 type FormType = z.infer<typeof formSchema>;
@@ -46,6 +53,7 @@ type FormType = z.infer<typeof formSchema>;
 interface UpsertSheetContentProps {
   products: Product[];
   productOptions: ComboboxOption[];
+  onSubmitSucces: () => void;
 }
 
 interface SelectedProducts {
@@ -58,6 +66,7 @@ interface SelectedProducts {
 const UpsertSheetContent = ({
   productOptions,
   products,
+  onSubmitSucces,
 }: UpsertSheetContentProps) => {
   const [selectedProducts, setSelectedProducts] = useState<SelectedProducts[]>(
     [],
@@ -128,6 +137,21 @@ const UpsertSheetContent = ({
       return acc + product.price * product.quantity;
     }, 0);
   }, [selectedProducts]);
+
+  const onSubmitSale = async () => {
+    try {
+      await createSale({
+        products: selectedProducts.map((product) => ({
+          id: product.id,
+          quantity: product.quantity,
+        })),
+      });
+      toast.success("Venda inserida com sucesso")
+      onSubmitSucces();
+    } catch (error) {
+      toast.error("Erro ao inserir a venda")
+    }
+  };
 
   return (
     <SheetContent className="!max-w-[700px]">
@@ -215,6 +239,17 @@ const UpsertSheetContent = ({
           </TableRow>
         </TableFooter>
       </Table>
+      <SheetFooter className="mt-5">
+        <Button
+          className="w-full gap-2"
+          variant="default"
+          onClick={onSubmitSale}
+          disabled={selectedProducts.length === 0}
+        >
+          {" "}
+          <CheckIcon size={20} /> Finalizar venda
+        </Button>
+      </SheetFooter>
     </SheetContent>
   );
 };
