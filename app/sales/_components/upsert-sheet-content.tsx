@@ -15,6 +15,7 @@ import {
   FormItem,
   FormLabel,
   Form,
+  FormMessage,
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import { Combobox, ComboboxOption } from "@/app/_components/ui/combobox";
@@ -36,8 +37,8 @@ import { formatCurrency } from "@/app/_helpers/currency";
 import SalesTableDropdownMenu from "./table-dropdown-menu";
 
 const formSchema = z.object({
-  productId: z.string().uuid(),
-  quantity: z.coerce.number().int().positive(),
+  productId: z.string().uuid({message: "Produto deve ser informado"}),
+  quantity: z.coerce.number().int("Somente números inteiros").positive("Quantidade do produto deve ser maior que zero").min(0, { message: "Quantidade do produto deve ser informada" }),
 });
 
 type FormType = z.infer<typeof formSchema>;
@@ -72,9 +73,9 @@ const UpsertSheetContent = ({
 
   const handleDelete = (productId: string) => {
     setSelectedProducts((currentProducts) => {
-      return currentProducts.filter((p) => p.id !== productId)
-    })
-  }
+      return currentProducts.filter((p) => p.id !== productId);
+    });
+  };
 
   const onSubmit = (data: FormType) => {
     const selectedProduct = products.find((p) => p.id === data.productId);
@@ -85,6 +86,13 @@ const UpsertSheetContent = ({
       );
 
       if (existingProduct) {
+        if (existingProduct.quantity + data.quantity > selectedProduct.stock) {
+          form.setError("quantity", {
+            message: "Quantidade indisponível no estoque",
+          });
+          return prev;
+        }
+        form.reset();
         return prev.map((p) => {
           if (p.id === selectedProduct.id) {
             return {
@@ -96,6 +104,13 @@ const UpsertSheetContent = ({
         });
       }
 
+      if (data.quantity > selectedProduct.stock) {
+        form.setError("quantity", {
+          message: "Quantidade indisponível no estoque",
+        });
+        return prev;
+      }
+      form.reset();
       return [
         ...prev,
         {
@@ -135,6 +150,7 @@ const UpsertSheetContent = ({
                     options={productOptions}
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -151,6 +167,7 @@ const UpsertSheetContent = ({
                     type="text"
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -183,7 +200,7 @@ const UpsertSheetContent = ({
                 {formatCurrency(p.quantity * p.price)}
               </TableCell>
               <TableCell className="text-right">
-                <SalesTableDropdownMenu product={p} onDelete={handleDelete}/>
+                <SalesTableDropdownMenu product={p} onDelete={handleDelete} />
               </TableCell>
             </TableRow>
           ))}
@@ -194,8 +211,7 @@ const UpsertSheetContent = ({
             <TableCell className="text-right">
               {formatCurrency(productsTotal)}
             </TableCell>
-            <TableCell>
-            </TableCell>
+            <TableCell></TableCell>
           </TableRow>
         </TableFooter>
       </Table>
