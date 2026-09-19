@@ -27,7 +27,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { upsertProduct } from "@/app/_actions/product/upsert-product/upsert-product";
+import { upsertProduct } from "@/app/_actions/product/upsert-product";
 
 interface UpsertProductDialogContentProps {
   onSuccess?: () => void;

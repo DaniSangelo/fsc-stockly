@@ -8,6 +8,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/app/_components/ui/alert-dialog";
+import { flattenValidationErrors } from "next-safe-action";
+import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 
 interface DeleteDialogContentProps {
@@ -15,15 +17,18 @@ interface DeleteDialogContentProps {
 }
 
 const DeleteDialogContent = ({ productId }: DeleteDialogContentProps) => {
-  const handleConfirmClick = async () => {
-    try {
-      await deleteProduct({ id: productId });
-      toast.success("Produto removido com sucesso")
-    } catch (error) {
-      toast.error("Erro ao remover produto")
-      console.log(error);
-    }
-  };
+  const { execute: executeDeleteProduct } = useAction(deleteProduct, {
+    onError: ({ error: { validationErrors, serverError } }) => {
+      const flattenErrors = flattenValidationErrors(validationErrors);
+      console.log(flattenErrors);
+      toast.error(serverError ?? flattenErrors.formErrors[0]);
+    },
+    onSuccess: () => {
+      toast.success("Produto excluído com sucesso");
+    },
+  });
+
+  const handleConfirmClick = () => executeDeleteProduct({id: productId});
 
   return (
     <AlertDialogContent>
@@ -37,7 +42,9 @@ const DeleteDialogContent = ({ productId }: DeleteDialogContentProps) => {
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancelar</AlertDialogCancel>
-        <AlertDialogAction onClick={handleConfirmClick}>Confirmar</AlertDialogAction>
+        <AlertDialogAction onClick={handleConfirmClick}>
+          Confirmar
+        </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   );
