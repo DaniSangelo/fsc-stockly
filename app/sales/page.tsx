@@ -10,18 +10,20 @@ const SalesPage = async () => {
   }));
 
   return (
-    <div className="m-8 w-full space-y-8 rounded-lg bg-white p-8">
-      <div className="flex w-full items-center justify-between">
+    <div className="m-8 flex h-[calc(100vh-4rem)] min-w-0 flex-1 flex-col gap-8 rounded-lg bg-white p-8">
+      <div className="flex w-full shrink-0 items-center justify-between">
         <div className="space-y-1">
-          <span className="text-xs font-semibold text-primary">Vendas</span>
-          <h2 className="text-xl font-semibold"> Produtos </h2>
+          <span className="text-xs font-semibold text-primary">Gestão de vendas</span>
+          <h2 className="text-xl font-semibold"> Vendas </h2>
         </div>
-        <CreateSaleButton productOptions={mappedProducts} products={products}/>
+        <CreateSaleButton productOptions={mappedProducts} products={products} />
       </div>
-      {/* <DataTable
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        {/* <DataTable
         columns={productTableColumns}
         data={JSON.parse(JSON.stringify(products))}
       /> */}
+      </div>
     </div>
   );
 };
