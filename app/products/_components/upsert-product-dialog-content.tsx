@@ -28,6 +28,8 @@ import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { upsertProduct } from "@/app/_actions/product/upsert-product";
+import { useAction } from "next-safe-action/hooks";
+import { toast } from "sonner";
 
 interface UpsertProductDialogContentProps {
   onSuccess?: () => void;
@@ -38,6 +40,15 @@ const UpsertProductDialogContent = ({
   defaultValues,
   onSuccess,
 }: UpsertProductDialogContentProps) => {
+  const { execute: executeUpsertProduct } = useAction(upsertProduct, {
+    onError: () => {
+      toast.error("Error ao atualizar produto");
+    },
+    onSuccess: () => {
+      toast.success("Produto criado com sucesso");
+      onSuccess?.();
+    },
+  });
   const form = useForm<UpsertProductSchema>({
     resolver: zodResolver(upsertProductSchema),
     defaultValues: defaultValues ?? {
@@ -59,15 +70,12 @@ const UpsertProductDialogContent = ({
   }, [defaultValues, form]);
 
   const isEditing = !!defaultValues;
-  const onSubmit = async (data: UpsertProductSchema) => {
-    try {
-      console.log({ ...data, id: defaultValues?.id ?? "" });
-      await upsertProduct({ ...data, id: defaultValues?.id });
-      onSuccess?.();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const onSubmit = async (data: UpsertProductSchema) =>
+    executeUpsertProduct({
+      ...data,
+      id: defaultValues?.id,
+    });
+
   return (
     <DialogContent>
       <Form {...form}>
