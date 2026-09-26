@@ -2,17 +2,17 @@
 
 import { AlertDialog } from "@/app/_components/ui/alert-dialog";
 import { Badge } from "@/app/_components/ui/badge";
-import { Product } from "@/app/generated/prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { CircleIcon } from "lucide-react";
 import ProductDialog from "./product-dialog";
 import { formatCurrency } from "@/app/_helpers/currency";
+import { ProductDto } from "@/app/_data-access/product/get-products";
 
 const getStatusLabel = (status: string): string => {
   return status === "IN_STOCK" ? "Em estoque" : "Esgotado";
 };
 
-export const productTableColumns: ColumnDef<Product>[] = [
+export const productTableColumns: ColumnDef<ProductDto>[] = [
   {
     accessorKey: "name",
     header: "Produto",
