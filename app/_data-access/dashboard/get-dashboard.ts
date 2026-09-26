@@ -23,19 +23,27 @@ export const getDashboard = async (): Promise<DashboardDto> => {
   const startOfDay = new Date(new Date().setHours(0, 0, 0, 0))
   const endOfDay = new Date(new Date().setHours(23, 59, 59, 999))
   const totalRevenueQuery = `SELECT SUM("unitPrice" * "quantity") as "totalRevenue" FROM "SaleProduct"`
-  const todayRevenueQuery = `SELECT SUM("unitPrice" * "quantity") as "todayRevenue" FROM "SaleProduct" WHERE "createdAt" >= $1 AND "createdAt" <= $2`
+  const todayRevenueQuery = `
+  SELECT
+    SUM("sp"."unitPrice" * "sp"."quantity") AS "todayRevenue"
+  FROM
+    "SaleProduct" AS "sp"
+  INNER JOIN "Sale" AS "s"
+    ON "s"."id" = "sp"."saleId"
+  WHERE
+    "s"."date" BETWEEN $1 AND $2`;
   const totalRevenueLast14DaysQuery = `
     SELECT
       SUM("sp"."unitPrice" * "sp"."quantity") as "todayRevenue",
-      TO_CHAR("s"."createdAt", 'DD/MM') AS day
+      TO_CHAR("s"."date", 'DD/MM') AS day
     FROM
       "SaleProduct" AS "sp"
     INNER JOIN "Sale" AS "s"
       ON "s"."id" = "sp"."saleId"
     WHERE
-      "s"."createdAt" BETWEEN $1 AND $2
+      "s"."date" BETWEEN $1 AND $2
     GROUP BY
-      TO_CHAR("s"."createdAt", 'DD/MM')
+      TO_CHAR("s"."date", 'DD/MM')
     `;
   
   const totalRevenueLast14DaysPromise = db.$queryRawUnsafe<DayTotalRevenue[]>(totalRevenueLast14DaysQuery, fourteenDaysAgo, todayEndOf)
