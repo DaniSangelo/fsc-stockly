@@ -73,4 +73,5 @@ export const upsertSale = actionClient.schema(upsertSaleSchema).action(async ({ 
   })
   revalidatePath('/products');
   revalidatePath('/sales');
+  revalidatePath('/');
 });
