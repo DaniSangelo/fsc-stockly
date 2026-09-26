@@ -10,9 +10,9 @@ import TotalRevenueCard from "./_components/total-revenue-card";
 import { Suspense } from "react";
 import TotalRevenueToday from "./_components/total-revenue-today";
 import TotalSalesCard from "./_components/total-sales-card";
-import SimpleSkeleton from "./_components/simple-skeleton";
 import TotalStockCard from "./_components/total-stock";
 import TotalProductsCard from "./_components/total-products-card";
+import { SummaryCardSkeleton } from "./_components/summary-card";
 
 const Home = async () => {
   const {
@@ -28,21 +28,21 @@ const Home = async () => {
         </HeaderLeft>
       </Header>
       <div className="grid grid-cols-2 gap-6">
-        <Suspense fallback={<SimpleSkeleton />}>
+        <Suspense fallback={<SummaryCardSkeleton />}>
           <TotalRevenueCard />
         </Suspense>
-        <Suspense fallback={<SimpleSkeleton />}>
+        <Suspense fallback={<SummaryCardSkeleton />}>
           <TotalRevenueToday />
         </Suspense>
       </div>
       <div className="grid grid-cols-3 gap-6">
-        <Suspense fallback={<SimpleSkeleton />}>
+        <Suspense fallback={<SummaryCardSkeleton />}>
           <TotalSalesCard />
         </Suspense>
-        <Suspense fallback={<SimpleSkeleton />}>
+        <Suspense fallback={<SummaryCardSkeleton />}>
           <TotalStockCard />
         </Suspense>
-        <Suspense fallback={<SimpleSkeleton />}>
+        <Suspense fallback={<SummaryCardSkeleton />}>
           <TotalProductsCard />
         </Suspense>
       </div>
