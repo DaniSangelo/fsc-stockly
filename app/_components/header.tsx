@@ -1,18 +1,25 @@
-import React from "react";
+import { ReactNode } from "react";
 
-interface HeaderProps {
-  subtitle: string;
-  title: string;
-  button?: React.ReactNode;
-}
-const Header = ({ subtitle, title, button }: HeaderProps) => {
+export const HeaderTitle = ({ children }: { children: ReactNode }) => {
+  return <h2 className="text-xl font-semibold"> {children} </h2>;
+};
+
+export const HeaderSubtitle = ({ children }: { children: ReactNode }) => {
+  return <span className="text-xs font-semibold text-primary">{children}</span>;
+};
+
+export const HeaderLeft = ({ children }: { children: ReactNode }) => {
+  return <div>{children}</div>;
+};
+
+export const HeaderRight = ({ children }: { children: ReactNode }) => {
+  return <div className="space-y-1">{children}</div>;
+};
+
+const Header = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex w-full shrink-0 items-center justify-between">
-      <div className="space-y-1">
-        <span className="text-xs font-semibold text-primary">{subtitle}</span>
-        <h2 className="text-xl font-semibold"> {title} </h2>
-      </div>
-      {button}
+      {children}
     </div>
   );
 };

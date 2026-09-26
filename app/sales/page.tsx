@@ -1,4 +1,4 @@
-import Header from "../_components/header";
+import Header, { HeaderLeft, HeaderRight, HeaderSubtitle, HeaderTitle } from "../_components/header";
 import { ComboboxOption } from "../_components/ui/combobox";
 import { DataTable } from "../_components/ui/data-table";
 import { getProducts } from "../_data-access/product/get-products";
@@ -23,7 +23,18 @@ const SalesPage = async () => {
   return (
     <div className="m-8 flex h-[calc(100vh-4rem)] min-w-0 flex-1 flex-col gap-8 rounded-lg bg-white p-8">
       <div className="flex w-full shrink-0 items-center justify-between">
-        <Header title="Vendas" subtitle="Gestão de Vendas" button={<UpsertSaleButton productOptions={productOptions} products={products} />} />
+        <Header>
+          <HeaderLeft>
+            <HeaderSubtitle> Gestão de Vendas</HeaderSubtitle>
+            <HeaderTitle> Vendas</HeaderTitle>
+          </HeaderLeft>
+          <HeaderRight>
+            <UpsertSaleButton
+              productOptions={productOptions}
+              products={products}
+            />
+          </HeaderRight>
+        </Header>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
         <DataTable columns={saleTableColumns} data={tableData} />
