@@ -16,7 +16,6 @@ export interface MostSoldProductDto {
 }
 
 interface DashboardDto {
-  todayRevenue: number;
   totalSales: number;
   totalStock: number;
   totalProducts: number;
@@ -28,17 +27,7 @@ export const getDashboard = async (): Promise<DashboardDto> => {
   const todayStartOf = dayjs().startOf('day').toDate();
   const todayEndOf = dayjs().endOf('day').toDate();
   const fourteenDaysAgo = dayjs(todayStartOf).subtract(14, 'day').toDate();
-  const startOfDay = new Date(new Date().setHours(0, 0, 0, 0))
-  const endOfDay = new Date(new Date().setHours(23, 59, 59, 999))
-  const todayRevenueQuery = `
-  SELECT
-    SUM("sp"."unitPrice" * "sp"."quantity") AS "todayRevenue"
-  FROM
-    "SaleProduct" AS "sp"
-  INNER JOIN "Sale" AS "s"
-    ON "s"."id" = "sp"."saleId"
-  WHERE
-    "s"."date" BETWEEN $1 AND $2`;
+
   const totalRevenueLast14DaysQuery = `
     SELECT
       SUM("sp"."unitPrice" * "sp"."quantity") as "todayRevenue",
@@ -82,7 +71,6 @@ export const getDashboard = async (): Promise<DashboardDto> => {
     }[]
   >(mostSoldProductsQuery);
   const totalRevenueLast14DaysPromise = db.$queryRawUnsafe<DayTotalRevenue[]>(totalRevenueLast14DaysQuery, fourteenDaysAgo, todayEndOf)
-  const todayRevenuePromise = db.$queryRawUnsafe<{ todayRevenue: number }[]>(todayRevenueQuery, startOfDay, endOfDay)
   const totalSalesPromise = db.sale.count();
   const totalStockPromise = db.product.aggregate({
     _sum: {
@@ -91,14 +79,12 @@ export const getDashboard = async (): Promise<DashboardDto> => {
   })
   const totalProductsPromise = db.product.count();
   const [
-    todayRevenue,
     totalSales,
     totalStock,
     totalProducts,
     totalLast14DaysRevenue,
     mostSoldProducts
   ] = await Promise.all([
-    todayRevenuePromise,
     totalSalesPromise,
     totalStockPromise,
     totalProductsPromise,
@@ -107,7 +93,6 @@ export const getDashboard = async (): Promise<DashboardDto> => {
   ])
 
   return {
-    todayRevenue: Number(todayRevenue[0].todayRevenue) || 0,
     totalSales,
     totalStock: Number(totalStock._sum.stock) || 0,
     totalProducts,
