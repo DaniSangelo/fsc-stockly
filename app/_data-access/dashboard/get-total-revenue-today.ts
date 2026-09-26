@@ -1,6 +1,6 @@
+import 'server-only';
 import { db } from '@/app/_lib/prisma';
 import dayjs from 'dayjs';
-import 'server-only';
 
 export const getTotalRevenueToday = async () => {
   const todayRevenueQuery = `
