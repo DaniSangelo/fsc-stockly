@@ -22,7 +22,7 @@ interface RevenueChartProps {
 }
 
 const RevenueChart = ({ data }: RevenueChartProps) => {
-  console.log("RevenueChart data:", data); // Log the data to check its structure
+
   return (
     <ChartContainer config={chartConfig} className="min-h-0 w-full">
       <BarChart accessibilityLayer data={data}>
