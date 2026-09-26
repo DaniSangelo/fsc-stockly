@@ -1,30 +1,21 @@
-import {
-  CircleDollarSign, PackageIcon,
-  ShoppingBasketIcon
-} from "lucide-react";
 import Header, {
   HeaderLeft,
   HeaderSubtitle,
   HeaderTitle,
 } from "../_components/header";
-import SummaryCard, {
-  SummaryCardIcon,
-  SummaryCardTitle,
-  SummaryCardValue,
-} from "./_components/summary-card";
 import { getDashboard } from "../_data-access/dashboard/get-dashboard";
 import RevenueChart from "./_components/revenue-chart";
 import MostSoldProductsItem from "./_components/most-sold-products";
 import TotalRevenueCard from "./_components/total-revenue-card";
 import { Suspense } from "react";
-import { Skeleton } from "../_components/ui/skeleton";
 import TotalRevenueToday from "./_components/total-revenue-today";
+import TotalSalesCard from "./_components/total-sales-card";
+import SimpleSkeleton from "./_components/simple-skeleton";
+import TotalStockCard from "./_components/total-stock";
+import TotalProductsCard from "./_components/total-products-card";
 
 const Home = async () => {
   const {
-    totalSales,
-    totalStock,
-    totalProducts,
     totalLast14DaysRevenue,
     mostSoldProducts,
   } = await getDashboard();
@@ -37,51 +28,23 @@ const Home = async () => {
         </HeaderLeft>
       </Header>
       <div className="grid grid-cols-2 gap-6">
-        <Suspense
-          fallback={
-            <div className="rounded-xl bg-white p-6">
-              <Skeleton className="mb-2 h-9 w-9 rounded-md" />
-              <Skeleton className="mb-1 h-4 w-24" />
-              <Skeleton className="h-8 w-32" />
-            </div>
-          }
-        >
+        <Suspense fallback={<SimpleSkeleton />}>
           <TotalRevenueCard />
         </Suspense>
-        <Suspense
-          fallback={
-            <div className="rounded-xl bg-white p-6">
-              <Skeleton className="mb-2 h-9 w-9 rounded-md" />
-              <Skeleton className="mb-1 h-4 w-24" />
-              <Skeleton className="h-8 w-32" />
-            </div>
-          }
-        >
+        <Suspense fallback={<SimpleSkeleton />}>
           <TotalRevenueToday />
         </Suspense>
       </div>
       <div className="grid grid-cols-3 gap-6">
-        <SummaryCard>
-          <SummaryCardIcon>
-            <CircleDollarSign />
-          </SummaryCardIcon>
-          <SummaryCardTitle>Vendas totais</SummaryCardTitle>
-          <SummaryCardValue>{totalSales}</SummaryCardValue>
-        </SummaryCard>
-        <SummaryCard>
-          <SummaryCardIcon>
-            <PackageIcon />
-          </SummaryCardIcon>
-          <SummaryCardTitle>Total em Estoque</SummaryCardTitle>
-          <SummaryCardValue>{totalStock}</SummaryCardValue>
-        </SummaryCard>
-        <SummaryCard>
-          <SummaryCardIcon>
-            <ShoppingBasketIcon />
-          </SummaryCardIcon>
-          <SummaryCardTitle>Produtos</SummaryCardTitle>
-          <SummaryCardValue>{totalProducts}</SummaryCardValue>
-        </SummaryCard>
+        <Suspense fallback={<SimpleSkeleton />}>
+          <TotalSalesCard />
+        </Suspense>
+        <Suspense fallback={<SimpleSkeleton />}>
+          <TotalStockCard />
+        </Suspense>
+        <Suspense fallback={<SimpleSkeleton />}>
+          <TotalProductsCard />
+        </Suspense>
       </div>
       <div className="grid grid-cols-[2.5fr_1fr] gap-6">
         <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white p-6">
