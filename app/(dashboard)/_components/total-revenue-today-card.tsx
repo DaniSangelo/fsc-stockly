@@ -3,7 +3,7 @@ import SummaryCard, { SummaryCardIcon, SummaryCardTitle, SummaryCardValue } from
 import { formatCurrency } from "@/app/_helpers/currency";
 import { getTotalRevenueToday } from "@/app/_data-access/dashboard/get-total-revenue-today";
 
-const TotalRevenueToday = async () => {
+const TotalRevenueTodayCard = async () => {
   const todayRevenue = await getTotalRevenueToday();
   return (
     <SummaryCard>
@@ -16,4 +16,4 @@ const TotalRevenueToday = async () => {
   );
 };
 
-export default TotalRevenueToday;
+export default TotalRevenueTodayCard;

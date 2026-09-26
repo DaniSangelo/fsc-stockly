@@ -6,7 +6,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/app/_components/ui/chart";
-import { DayTotalRevenue } from "@/app/_data-access/dashboard/get-dashboard";
+import { DayTotalRevenue } from "@/app/_data-access/dashboard/get-revenue-last-14-days";
 import { formatCurrency } from "@/app/_helpers/currency";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
@@ -22,7 +22,6 @@ interface RevenueChartProps {
 }
 
 const RevenueChart = ({ data }: RevenueChartProps) => {
-
   return (
     <ChartContainer config={chartConfig} className="min-h-0 w-full">
       <BarChart accessibilityLayer data={data}>
@@ -33,7 +32,13 @@ const RevenueChart = ({ data }: RevenueChartProps) => {
           tickMargin={10}
           axisLine={false}
         />
-        <ChartTooltip content={<ChartTooltipContent formatter={(value) => formatCurrency(+value)}/>} />
+        <ChartTooltip
+          content={
+            <ChartTooltipContent
+              formatter={(value) => formatCurrency(+value)}
+            />
+          }
+        />
         <Bar dataKey="todayRevenue" radius={4} fill="#10b981" />
       </BarChart>
     </ChartContainer>

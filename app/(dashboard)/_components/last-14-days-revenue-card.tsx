@@ -2,7 +2,6 @@ import { getRevenueLast14Days } from "@/app/_data-access/dashboard/get-revenue-l
 import RevenueChart from "./revenue-chart";
 
 const Last14DaysRevenueCard = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 5000))
   const totalLast14DaysRevenue = await getRevenueLast14Days();
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white p-6">

@@ -10,11 +10,7 @@ export interface MostSoldProductDto {
   price: number;
 }
 
-interface DashboardDto {
-  mostSoldProducts: MostSoldProductDto[];
-}
-
-export const getDashboard = async (): Promise<DashboardDto> => {
+export const getMostSoldProducts = async () => {
   const mostSoldProductsQuery = `
     SELECT
       "Product"."name",
@@ -35,7 +31,7 @@ export const getDashboard = async (): Promise<DashboardDto> => {
       "totalSold" DESC
     LIMIT 5;
   `;
-  const mostSoldProductsPromise = db.$queryRawUnsafe<
+  const mostSoldProducts = await db.$queryRawUnsafe<
     {
       productId: string;
       name: string;
@@ -44,18 +40,13 @@ export const getDashboard = async (): Promise<DashboardDto> => {
       price: number;
     }[]
   >(mostSoldProductsQuery);
-  const [
-    mostSoldProducts
-  ] = await Promise.all([
-    mostSoldProductsPromise
-  ])
 
   return {
     mostSoldProducts: mostSoldProducts.map((product) => ({
       ...product,
       totalSold: Number(product.totalSold),
       price: Number(product.price),
-      status: product.stock > 0 ? "IN_STOCK" : "OUT_OF_STOCK",
+      status: product.stock > 0 ? "IN_STOCK" : "OUT_OF_STOCK" as ProductStockStatus,
     })),
   }
 }
