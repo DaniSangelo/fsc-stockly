@@ -21,9 +21,8 @@ import {
 import { Input } from "@/app/_components/ui/input";
 import { Combobox, ComboboxOption } from "@/app/_components/ui/combobox";
 import { Button } from "@/app/_components/ui/button";
-import { CheckIcon, PlusIcon } from "lucide-react";
+import { CheckIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Product } from "@/app/generated/prisma/client";
 import {
   Table,
   TableBody,
@@ -35,11 +34,11 @@ import {
   TableRow,
 } from "@/app/_components/ui/table";
 import { formatCurrency } from "@/app/_helpers/currency";
-import SalesTableDropdownMenu from "./table-dropdown-menu";
-import { createSale } from "@/app/_actions/sale/create-sale";
+import { upsertSale } from "@/app/_actions/sale/upsert-sale";
 import { toast } from "sonner";
 import { useAction } from "next-safe-action/hooks";
 import { flattenValidationErrors } from "next-safe-action";
+import { ProductDto } from "@/app/_data-access/product/get-products";
 
 const formSchema = z.object({
   productId: z.string().uuid({ message: "Produto deve ser informado" }),
@@ -53,9 +52,11 @@ const formSchema = z.object({
 type FormType = z.infer<typeof formSchema>;
 
 interface UpsertSheetContentProps {
-  products: Product[];
+  saleId?: string;
+  products: ProductDto[];
   productOptions: ComboboxOption[];
   onSubmitSucces: () => void;
+  defaultSelectedProducts?: SelectedProducts[];
 }
 
 interface SelectedProducts {
@@ -69,21 +70,23 @@ const UpsertSheetContent = ({
   productOptions,
   products,
   onSubmitSucces,
+  defaultSelectedProducts,
+  saleId,
 }: UpsertSheetContentProps) => {
   const [selectedProducts, setSelectedProducts] = useState<SelectedProducts[]>(
-    [],
+    defaultSelectedProducts ?? [],
   );
 
-  const { execute: executeCreateSale } = useAction(createSale, {
-    onError: ({error: {validationErrors, serverError}}) => {
-      const flattenErrors = flattenValidationErrors(validationErrors) 
+  const { execute: executeUpsertSale } = useAction(upsertSale, {
+    onError: ({ error: { validationErrors, serverError } }) => {
+      const flattenErrors = flattenValidationErrors(validationErrors);
       console.log({ error: flattenErrors });
       toast.error(serverError ?? flattenErrors.formErrors[0]);
     },
     onSuccess: () => {
-      toast.success('Venda realizada com sucesso')
+      toast.success("Venda realizada com sucesso");
       onSubmitSucces();
-    }
+    },
   });
 
   const form = useForm<FormType>({
@@ -153,7 +156,8 @@ const UpsertSheetContent = ({
   }, [selectedProducts]);
 
   const onSubmitSale = async () => {
-    executeCreateSale({
+    executeUpsertSale({
+      id: saleId,
       products: selectedProducts.map((product) => ({
         id: product.id,
         quantity: product.quantity,
@@ -161,10 +165,15 @@ const UpsertSheetContent = ({
     });
   };
 
+  const screenLabels = {
+    title: saleId ? "Editar Venda" : "Nova venda",
+    button: saleId ? "Salvar Venda" : "Finalizar Venda"
+  }
+
   return (
     <SheetContent className="!max-w-[700px]">
       <SheetHeader>
-        <SheetTitle> Nova venda</SheetTitle>
+        <SheetTitle> {screenLabels.title} </SheetTitle>
         <SheetDescription> Insira as informações abaixo </SheetDescription>
       </SheetHeader>
       <Form {...form}>
@@ -232,7 +241,15 @@ const UpsertSheetContent = ({
                 {formatCurrency(p.quantity * p.price)}
               </TableCell>
               <TableCell className="text-right">
-                <SalesTableDropdownMenu product={p} onDelete={handleDelete} />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Remover ${p.name} da venda`}
+                  onClick={() => handleDelete(p.id)}
+                >
+                  <TrashIcon size={16} />
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -255,7 +272,7 @@ const UpsertSheetContent = ({
           disabled={selectedProducts.length === 0}
         >
           {" "}
-          <CheckIcon size={20} /> Finalizar venda
+          <CheckIcon size={20} /> {screenLabels.button}
         </Button>
       </SheetFooter>
     </SheetContent>
