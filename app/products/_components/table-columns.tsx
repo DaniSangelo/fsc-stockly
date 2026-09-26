@@ -1,16 +1,11 @@
 "use client";
 
 import { AlertDialog } from "@/app/_components/ui/alert-dialog";
-import { Badge } from "@/app/_components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
-import { CircleIcon } from "lucide-react";
 import ProductDialog from "./product-dialog";
 import { formatCurrency } from "@/app/_helpers/currency";
 import { ProductDto } from "@/app/_data-access/product/get-products";
-
-const getStatusLabel = (status: string): string => {
-  return status === "IN_STOCK" ? "Em estoque" : "Esgotado";
-};
+import ProducStatusBadge from "@/app/_components/product-status-badge";
 
 export const productTableColumns: ColumnDef<ProductDto>[] = [
   {
@@ -22,8 +17,8 @@ export const productTableColumns: ColumnDef<ProductDto>[] = [
     header: "Vr. Unitário",
     cell: (row) => {
       const product = row.row.original;
-      return formatCurrency(+product.price)
-    }
+      return formatCurrency(+product.price);
+    },
   },
   {
     accessorKey: "stock",
@@ -34,18 +29,7 @@ export const productTableColumns: ColumnDef<ProductDto>[] = [
     header: "Status",
     cell: (row) => {
       const product = row.row.original;
-      const label = getStatusLabel(product.status);
-      return (
-        <Badge
-          className={`gap-1.5 ${label === "Em estoque" ? "bg-[#00A180]/20 text-[#00A180] hover:bg-[#00A180]/20" : "bg-[#5d5e5e]/20 text-[#5d5e5e] hover:bg-[#5d5e5e]/20"}`}
-        >
-          <CircleIcon
-            size={10}
-            className={`${label === "Em estoque" ? "fill-[#00A180] text-[#00A180]" : "fill-[#5c5c5c] text-[#5c5c5c]"}`}
-          />
-          {label}
-        </Badge>
-      );
+      return <ProducStatusBadge status={product.status} />;
     },
   },
   {
