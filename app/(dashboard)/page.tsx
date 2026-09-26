@@ -18,10 +18,12 @@ import { getDashboard } from "../_data-access/dashboard/get-dashboard";
 import { formatCurrency } from "../_helpers/currency";
 import RevenueChart from "./_components/revenue-chart";
 import MostSoldProductsItem from "./_components/most-sold-products";
+import TotalRevenueCard from "./_components/total-revenue-card";
+import { Suspense } from "react";
+import { Skeleton } from "../_components/ui/skeleton";
 
 const Home = async () => {
   const {
-    totalRevenue,
     todayRevenue,
     totalSales,
     totalStock,
@@ -38,13 +40,17 @@ const Home = async () => {
         </HeaderLeft>
       </Header>
       <div className="grid grid-cols-2 gap-6">
-        <SummaryCard>
-          <SummaryCardIcon>
-            <DollarSign />
-          </SummaryCardIcon>
-          <SummaryCardTitle>Receita total</SummaryCardTitle>
-          <SummaryCardValue>{formatCurrency(totalRevenue)}</SummaryCardValue>
-        </SummaryCard>
+        <Suspense
+          fallback={
+            <div className="rounded-xl bg-white p-6">
+              <Skeleton className="mb-2 h-9 w-9 rounded-md" />
+              <Skeleton className="mb-1 h-4 w-24" />
+              <Skeleton className="h-8 w-32" />
+            </div>
+          }
+        >
+          <TotalRevenueCard />
+        </Suspense>
         <SummaryCard>
           <SummaryCardIcon>
             <DollarSign />
@@ -83,10 +89,10 @@ const Home = async () => {
           <RevenueChart data={totalLast14DaysRevenue} />
         </div>
         <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white">
-          <p className="text-lg font-semibold text-slate-900 p-6">
+          <p className="p-6 text-lg font-semibold text-slate-900">
             Produtos mais vendidos
           </p>
-          <div className="overflow-y-auto space-y-7 mt-4 px-4 pb-4">
+          <div className="mt-4 space-y-7 overflow-y-auto px-4 pb-4">
             {mostSoldProducts.map((item, i) => {
               return <MostSoldProductsItem product={item} key={i} />;
             })}
