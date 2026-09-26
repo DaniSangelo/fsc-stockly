@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <div className="flex h-full">
           <Sidebar />
-          {children}
+          <main className="ml-64 min-w-0 flex-1">{children}</main>
         </div>
         <Toaster richColors visibleToasts={5} expand={true} position="top-center"/>
       </body>
