@@ -30,7 +30,5 @@ export const deleteSale = actionClient.schema(deleteSaleSchema).action(async ({ 
       })
     }
   })
-  revalidatePath('/products');
-  revalidatePath('/sales');
-  revalidatePath('/');
+  revalidatePath('/', 'layout');
 })

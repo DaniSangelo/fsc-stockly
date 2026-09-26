@@ -11,5 +11,5 @@ export const deleteProduct = actionClient.schema(deleteProductSchema).action( as
       id,
     }
   });
-  revalidatePath("/products");
+  revalidatePath("/", 'layout'); //revalidate all pages that render the root layout
 })
